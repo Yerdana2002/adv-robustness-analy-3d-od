@@ -1,0 +1,36 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Large files & artifacts
+*.pth
+*.pt
+*.pkl
+*.bin
+*.ckpt
+*.h5
+*.db
+*.sqlite3
+
+# Logs & outputs
+*.log
+results/
+visualizations/
+runs/
+
+# Environments & IDEs
+.env
+.venv/
+env/
+.vscode/
+.idea/
+
+# Compiled binaries & build artifacts
+*.o
+*.so
+*.a
+*.ninja*
+.ninja_deps
+.ninja_log
+.DS_Store

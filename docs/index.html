@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description"
+        content="Comprehensive Robustness Analysis of LiDAR-based 3D Object Detection in Autonomous Driving [ECCV 2026]">
+    <meta name="keywords"
+        content="LiDAR, 3D Object Detection, Adversarial Attacks, Autonomous Driving, Robustness Analysis">
+    <meta name="author" content="Adwait Chandorkar, Kai Krink, Yerdana Maulenbay, Hasan Tercan, Tobias Meisen">
+
+    <!-- Open Graph / Social Sharing -->
+    <meta property="og:title"
+        content="Comprehensive Robustness Analysis of LiDAR-based 3D Object Detection in Autonomous Driving">
+    <meta property="og:description"
+        content="A holistic framework to evaluate adversarial robustness of LiDAR 3D object detectors across structural and predictive dimensions [ECCV 2026].">
+    <meta property="og:image" content="images/7417_bev_comparison.png">
+    <meta property="og:type" content="website">
+
+    <title>Comprehensive Robustness Analysis of LiDAR-based 3D Object Detection in Autonomous Driving | ECCV 2026
+    </title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700;800&family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Bulma & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --accent-color: #e11d48;
+            --bg-light: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Noto Sans', 'Inter', sans-serif;
+            color: var(--text-main);
+            background-color: var(--bg-light);
+            line-height: 1.65;
+        }
+
+        /* Publication Title & Header */
+        .publication-title {
+            font-family: 'Google Sans', sans-serif;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.25;
+            margin-bottom: 0.75rem;
+        }
+
+        .publication-venue {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
+        /* Keywords Tag Container (RobustOnion Style) */
+        .custom-keywords {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin: 1.2rem auto 1.8rem auto;
+            max-width: 900px;
+        }
+
+        .custom-keywords .tag {
+            background: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.4rem 0.85rem;
+            border-radius: 9999px;
+            transition: all 0.2s ease;
+        }
+
+        .custom-keywords .tag:hover {
+            background: #dbeafe;
+            transform: translateY(-1px);
+        }
+
+        /* Authors & Affiliations */
+        .publication-authors {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 1.15rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .author-block {
+            display: inline-block;
+            margin: 0 8px;
+            font-weight: 500;
+        }
+
+        .author-block a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .author-block a:hover {
+            color: var(--primary-hover);
+            text-decoration: underline;
+        }
+
+        .affiliations {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .footnote {
+            font-size: 0.88rem;
+            color: #64748b;
+            font-style: italic;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Action Buttons */
+        .publication-links {
+            margin-top: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .publication-links .button {
+            margin: 6px 8px;
+            font-weight: 600;
+            border-radius: 9999px;
+            padding: 0.6rem 1.4rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .publication-links .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        /* Content Boxes & Cards */
+        .box {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            padding: 2.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-family: 'Google Sans', sans-serif;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 12px;
+            margin-bottom: 24px;
+            color: #0f172a;
+        }
+
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 45px;
+            height: 3.5px;
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        .centered-title::after {
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Modern Harmonious Key Finding Cards */
+        .insight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+            margin-top: 1rem;
+        }
+
+        .insight-item {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 1.35rem 1.4rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .insight-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+            border-color: #cbd5e1;
+        }
+
+        .insight-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.02rem;
+            color: #0f172a;
+            margin-bottom: 0.6rem;
+        }
+
+        .insight-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+
+        /* Elegant Muted Accent Tones (No harsh reds/greens) */
+        .icon-indigo {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .icon-violet {
+            background: #f5f3ff;
+            color: #7c3aed;
+        }
+
+        .icon-amber {
+            background: #fffbeb;
+            color: #d97706;
+        }
+
+        .icon-teal {
+            background: #f0fdfa;
+            color: #0d9488;
+        }
+
+        .insight-text {
+            font-size: 0.94rem;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        /* Pipeline Architecture Box */
+        .pipeline-step {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1.2rem;
+            text-align: center;
+            height: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .pipeline-step i {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Benchmark Tables */
+        .table-container table {
+            width: 100%;
+            font-size: 0.95rem;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table-container th {
+            background-color: #f1f5f9;
+            color: #334155;
+            font-weight: 700;
+            text-align: center !important;
+            vertical-align: middle !important;
+            padding: 10px 14px;
+        }
+
+        .table-container td {
+            vertical-align: middle !important;
+            padding: 9px 14px;
+            border-color: #f1f5f9;
+        }
+
+        /* Image Gallery Cards */
+        .visual-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .visual-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        .visual-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .visual-caption {
+            padding: 14px 18px;
+            font-size: 0.95rem;
+            color: #334155;
+            background: #ffffff;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        /* Teaser Visual */
+        .teaser-box {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            margin-bottom: 2rem;
+        }
+
+        /* BibTeX Container */
+        .bibtex-wrapper {
+            position: relative;
+        }
+
+        .bibtex-box {
+            background: #1e293b;
+            color: #cbd5e1;
+            padding: 1.5rem;
+            border-radius: 10px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 0.88rem;
+            overflow-x: auto;
+            text-align: left;
+            line-height: 1.5;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Footer */
+        footer {
+            background-color: #f1f5f9;
+            padding: 40px 0;
+            margin-top: 60px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Top Institute Logo Header Bar -->
+    <header class="top-logo-bar" style="padding: 8px 0; background: #fff; border-bottom: 1px solid #e2e8f0;">
+        <div class="container is-max-desktop">
+            <div class="columns is-vcentered is-mobile" style="margin: 0;">
+                <div class="column is-6-mobile is-6-tablet">
+                    <span class="has-text-weight-semibold has-text-grey" style="font-size: 0.85rem;">
+                        <i class="fas fa-university mr-1"></i> Research Project
+                    </span>
+                </div>
+                <div class="column is-6-mobile is-6-tablet has-text-right">
+                    <div class="institute-logos"
+                        style="display: flex; align-items: center; justify-content: flex-end; gap: 18px;">
+                        <!-- TMDT Logo (Adjust height: 38px as needed) -->
+                        <a href="https://www.tmdt.uni-wuppertal.de/" target="_blank"
+                            title="Institute TMDT, University of Wuppertal">
+                            <img src="images/TMDT_Logo_complete.png" alt="TMDT Logo"
+                                style="height: 38px; width: auto; object-fit: contain;">
+                        </a>
+
+                        <!-- BUW Logo (Adjust height: 38px as needed) -->
+                        <a href="https://www.uni-wuppertal.de/" target="_blank" title="University of Wuppertal">
+                            <img src="images/BUW_Logo-schwarz.png" alt="University of Wuppertal Logo"
+                                style="height: 38px; width: auto; object-fit: contain;">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Header Section -->
+    <section class="hero">
+        <div class="hero-body">
+            <div class="container is-max-desktop has-text-centered">
+
+                <!-- Paper Title -->
+                <h1 class="title is-2 publication-title">
+                    Comprehensive Robustness Analysis of LiDAR-based 3D Object Detection in Autonomous Driving
+                </h1>
+
+                <!-- Venue Badge -->
+                <div class="publication-venue">
+                    <span>ECCV 2026</span>
+                </div>
+
+                <!-- Keyword Badges (RobustOnion Style) -->
+                <div class="custom-keywords">
+                    <span class="tag">3D Object Detection</span>
+                    <span class="tag">LiDAR Perception</span>
+                    <span class="tag">Adversarial Robustness</span>
+                    <span class="tag">Autonomous Driving</span>
+                    <span class="tag">Safety-Critical AI</span>
+                </div>
+
+                <!-- Authors -->
+                <div class="publication-authors">
+                    <span class="author-block">
+                        <a href="https://de.linkedin.com/in/adwait-chandorkar-47922a41" target="_blank">Adwait
+                            Chandorkar</a><sup>1</sup>,
+                    </span>
+                    <span class="author-block">
+                        <a href="https://www.linkedin.com/in/kai-krink-64767a284" target="_blank">Kai
+                            Krink</a><sup>1</sup>,
+                    </span>
+                    <span class="author-block">
+                        <a href="https://www.linkedin.com/in/yerdana-maulenbay/" target="_blank">Yerdana
+                            Maulenbay</a><sup>1,2,*</sup>,
+                    </span>
+                    <span class="author-block">
+                        <a href="https://www.linkedin.com/in/hasan-tercan-2a3105196" target="_blank">Hasan
+                            Tercan</a><sup>1</sup>,
+                    </span>
+                    <span class="author-block">
+                        <a href="https://www.linkedin.com/in/tobias-meisen/" target="_blank">Tobias
+                            Meisen</a><sup>1</sup>
+                    </span>
+                </div>
+
+                <!-- Affiliations -->
+                <div class="affiliations">
+                    <div><sup>1</sup>Institute for Technologies and Management of Digital Transformation (TMDT),
+                        University of Wuppertal, Germany</div>
+                    <div><sup>2</sup>IKB Faculty of Science, University of British Columbia, Canada</div>
+                </div>
+
+                <!-- Footnote -->
+                <div class="footnote">
+                    <sup>*</sup>Work done during a Research Internship at TMDT, University of
+                    Wuppertal funded by the DAAD RISE program.
+                </div>
+
+                <!-- Action Links & Badges -->
+                <div class="publication-links">
+                    <!-- arXiv Link -->
+                    <a href="https://arxiv.org/abs/2607.02074" class="button is-dark is-rounded" target="_blank">
+                        <span class="icon"><i class="ai ai-arxiv"></i></span>
+                        <span>arXiv (2607.02074)</span>
+                    </a>
+
+                    <!-- Code Link -->
+                    <a href="https://github.com/tmdt-buw/adv-robustness-analy-3d-od" class="button is-dark is-rounded"
+                        target="_blank">
+                        <span class="icon"><i class="fab fa-github"></i></span>
+                        <span>Code (GitHub)</span>
+                    </a>
+
+                    <!-- BibTeX Link -->
+                    <a href="#citation" class="button is-dark is-rounded">
+                        <span class="icon"><i class="fas fa-quote-right"></i></span>
+                        <span>Cite / BibTeX</span>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Teaser Section -->
+    <section class="section pt-0">
+        <div class="container is-max-desktop">
+            <div class="teaser-box">
+                <img src="images/7417_bev_comparison.png" alt="Adversarial Attack Comparison on 3D LiDAR Point Cloud">
+                <p class="has-text-centered mt-3" style="font-size: 0.98rem; color: #334155;">
+                    <strong>Bird's-Eye-View (BEV) Detection Comparison:</strong> A subtle adversarial coordinate
+                    perturbation leads to severe prediction degradation (missed true positives and phantom bounding
+                    boxes), exposing fundamental vulnerabilities in state-of-the-art 3D object detectors.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Abstract Section -->
+    <section class="section pt-0">
+        <div class="container is-max-desktop">
+            <div class="box">
+                <h2 class="title is-3 section-title">Abstract</h2>
+                <div class="content has-text-justified" style="font-size: 1.05rem; line-height: 1.75;">
+                    <p>
+                        Recent advancements in LiDAR-only 3D object detection have demonstrated improved detection
+                        accuracy over benchmark datasets. However, the adversarial robustness of these models remains
+                        untested. Very few adversarial robustness studies exist for LiDAR-only 3D object detection and
+                        unfortunately, even they are limited to legacy models. Moreover, there is a systemic gap in the
+                        existing evaluation frameworks that rely simply on mAP ignoring other structural and predictive
+                        factors. To fill this gap, we propose a holistic framework that evaluates adversarial robustness
+                        using two structural factors (point cloud density and point cloud localization) and three
+                        predictive factors (misclassification, localization error, distance from ego). Using this
+                        framework, we perform an empirical study and critical analysis on recent and legacy
+                        state-of-theart models using adversarial attacks specifically designed for LiDAR based models.
+                        Our key finding is that high-capacity, voxel-based detectors are more susceptible to structured
+                        coordinate perturbations than pillar-based detectors. Additionally, non-anchor-based detectors
+                        demonstrate poor adversarial robustness, which necessitates rethinking model training
+                        techniques. Overall, our results demonstrate that recent models are as vulnerable to adversarial
+                        attacks as their predecessors. Therefore, we argue that there is a need to improve the
+                        evaluation benchmarks for 3D object detection that not only reward architectural modifications
+                        for improving detection accuracy, but also evaluate whether the design choices improve
+                        adversarial robustness.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Findings / Takeaways (DynEval Style Cards) -->
+    <section class="section pt-0">
+        <div class="container is-max-desktop">
+            <div class="box">
+                <h2 class="title is-3 section-title">Key Contributions & Core Findings</h2>
+
+                <div class="insight-grid">
+                    <!-- Card 1: Framework -->
+                    <div class="insight-item">
+                        <div class="insight-header">
+                            <span class="insight-icon icon-indigo"><i class="fas fa-layer-group"></i></span>
+                            <span>Multi-Factor Robustness Framework</span>
+                        </div>
+                        <div class="insight-text">
+                            Moves beyond simple mean Average Precision (mAP) by evaluating structural factors (point
+                            density and localization) alongside predictive factors (misclassification, bounding box
+                            error, and distance from the ego vehicle).
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Voxel vs Pillar -->
+                    <div class="insight-item">
+                        <div class="insight-header">
+                            <span class="insight-icon icon-violet"><i class="fas fa-cubes"></i></span>
+                            <span>Voxel vs. Pillar Architectures</span>
+                        </div>
+                        <div class="insight-text">
+                            High-capacity, voxel-based detectors (e.g., CenterPoint, FocalFormer3D) exhibit
+                            substantially higher vulnerability to structured coordinate perturbations compared to
+                            pillar-based detectors.
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Anchor-Free Fragility -->
+                    <div class="insight-item">
+                        <div class="insight-header">
+                            <span class="insight-icon icon-amber"><i class="fas fa-bullseye"></i></span>
+                            <span>Anchor-Free Detector Fragility</span>
+                        </div>
+                        <div class="insight-text">
+                            Non-anchor-based detectors demonstrate severe susceptibility to adversarial point attacks,
+                            highlighting an urgent need for robustness-oriented training paradigms.
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Point Cloud Density -->
+                    <div class="insight-item">
+                        <div class="insight-header">
+                            <span class="insight-icon icon-teal"><i class="fas fa-braille"></i></span>
+                            <span>PC Density as a double-edged sword</span>
+                        </div>
+                        <div class="insight-text">
+                            Contrary to the intuition that higher point cloud density bolsters model resilience, our
+                            findings establish that point density and adversarial robustness are largely orthogonal.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Framework / Pipeline Architecture -->
+    <section class="section pt-0">
+        <div class="container is-max-desktop">
+            <div class="box">
+                <h2 class="title is-3 section-title">Pipeline Architecture & Methodology</h2>
+                <div class="visual-card" style="border: none; box-shadow: none; margin-bottom: 0;">
+                    <img src="images/3_methodology.png" alt="Adversarial Robustness Evaluation Pipeline Methodology"
+                        style="width: 100%; height: auto; border-radius: 8px;">
+                    <div class="visual-caption has-text-centered"
+                        style="font-size: 0.95rem; color: #475569; padding-top: 1rem; border: none;">
+                        <p><strong>Methodology Overview:</strong> End-to-end framework for evaluating adversarial
+                            robustness in LiDAR-based 3D object detection across structural and predictive multi-factor
+                            metrics, diverse attack suites, and detection architectures. The robustness factors are
+                            represented in <span style="color: #D99694;"><i class="fas fa-square"
+                                    style="font-size: 0.85rem; vertical-align: 1px;"></i></span> boxes.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benchmark Results Section -->
+    <section class="section pt-0">
+        <div class="container is-max-desktop">
+            <div class="box">
+                <h2 class="title is-3 section-title">Benchmark Results (Attack Success Rate)</h2>
+                <p class="mb-4 text-muted"><em>Note: Higher Attack Success Rate (ASR %) indicates greater vulnerability
+                        to the adversarial attack. Values in <strong>bold</strong> represent highest vulnerability per
+                        attack column.</em></p>
+
+                <!-- nuScenes Table -->
+                <h3 class="title is-5 mt-4"><i class="fas fa-car has-text-info mr-2"></i> nuScenes Benchmark</h3>
+                <div class="table-container">
+                    <table class="table is-bordered is-striped is-hoverable is-fullwidth">
+                        <thead>
+                            <tr>
+                                <th rowspan="2">Model</th>
+                                <th rowspan="2">LiDAttack</th>
+                                <th rowspan="2">Non-E2E</th>
+                                <th colspan="3">IoU-S Attack Variants</th>
+                            </tr>
+                            <tr>
+                                <th>Attachment</th>
+                                <th>Perturbation</th>
+                                <th>Detachment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>CenterPoint</strong></td>
+                                <td class="has-text-right">0.81%</td>
+                                <td class="has-text-right">48.60%</td>
+                                <td class="has-text-right">23.30%</td>
+                                <td class="has-text-right">88.46%</td>
+                                <td class="has-text-right">43.26%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>FocalFormer3D</strong></td>
+                                <td class="has-text-right"><strong>5.77%</strong></td>
+                                <td class="has-text-right"><strong>59.30%</strong></td>
+                                <td class="has-text-right">50.33%</td>
+                                <td class="has-text-right"><strong>97.86%</strong></td>
+                                <td class="has-text-right"><strong>68.30%</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>PillarNeSt</strong></td>
+                                <td class="has-text-right">0.60%</td>
+                                <td class="has-text-right">35.22%</td>
+                                <td class="has-text-right">50.29%</td>
+                                <td class="has-text-right">53.15%</td>
+                                <td class="has-text-right">45.27%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>PointPillars</strong></td>
+                                <td class="has-text-right">0.95%</td>
+                                <td class="has-text-right">49.32%</td>
+                                <td class="has-text-right"><strong>75.70%</strong></td>
+                                <td class="has-text-right">40.83%</td>
+                                <td class="has-text-right">38.20%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Waymo Table -->
+                <h3 class="title is-5 mt-5"><i class="fas fa-truck has-text-info mr-2"></i> Waymo Open Dataset Benchmark
+                </h3>
+                <div class="table-container">
+                    <table class="table is-bordered is-striped is-hoverable is-fullwidth">
+                        <thead>
+                            <tr>
+                                <th rowspan="2">Model</th>
+                                <th rowspan="2">LiDAttack</th>
+                                <th rowspan="2">Non-E2E</th>
+                                <th colspan="3">IoU-S Attack Variants</th>
+                            </tr>
+                            <tr>
+                                <th>Attachment</th>
+                                <th>Perturbation</th>
+                                <th>Detachment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>CenterPoint</strong></td>
+                                <td class="has-text-right">0.00%</td>
+                                <td class="has-text-right">71.49%</td>
+                                <td class="has-text-right">33.50%</td>
+                                <td class="has-text-right">71.49%</td>
+                                <td class="has-text-right"><strong>74.36%</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>FocalFormer3D</strong></td>
+                                <td class="has-text-right">2.44%</td>
+                                <td class="has-text-right"><strong>93.25%</strong></td>
+                                <td class="has-text-right">25.28%</td>
+                                <td class="has-text-right"><strong>93.25%</strong></td>
+                                <td class="has-text-right">33.12%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>PillarNeSt</strong></td>
+                                <td class="has-text-right"><strong>3.02%</strong></td>
+                                <td class="has-text-right">43.57%</td>
+                                <td class="has-text-right">39.13%</td>
+                                <td class="has-text-right">43.57%</td>
+                                <td class="has-text-right">23.73%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>PointPillars</strong></td>
+                                <td class="has-text-right">2.65%</td>
+                                <td class="has-text-right">19.17%</td>
+                                <td class="has-text-right"><strong>65.05%</strong></td>
+                                <td class="has-text-right">19.17%</td>
+                                <td class="has-text-right">33.00%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Qualitative Visualizations Section -->
+    <section class="section pt-0">
+        <div class="container is-max-desktop">
+            <div class="box">
+                <h2 class="title is-3 section-title">Qualitative Visualizations</h2>
+                <p class="mb-5">Visual comparisons between clean LiDAR point clouds and adversarial perturbations
+                    generated across our benchmark:</p>
+
+                <div class="columns is-multiline">
+                    <!-- Visual 1 -->
+                    <div class="column is-12">
+                        <div class="visual-card">
+                            <img src="images/7417_bev_depth.png" alt="Point Cloud BEV Depth">
+                            <div class="visual-caption">
+                                <i class="fas fa-eye has-text-info mr-1"></i> <strong>Bird's-Eye-View (BEV) Depth
+                                    Map:</strong> Visualizing spatial depth distribution across LiDAR return points in
+                                the scene.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visual 2 -->
+                    <div class="column is-12">
+                        <div class="visual-card">
+                            <img src="images/7417_bev_comparison.png" alt="Adversarial vs Clean Comparison">
+                            <div class="visual-caption">
+                                <i class="fas fa-code-compare has-text-danger mr-1"></i> <strong>Clean vs. Adversarially
+                                    Perturbed Point Cloud:</strong> Demonstrating how targeted point additions/shifts
+                                mislead 3D bounding box estimation.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visual 3 -->
+                    <div class="column is-12">
+                        <div class="visual-card">
+                            <img src="images/7417_obj_0.png" alt="Object-Level Crop">
+                            <div class="visual-caption">
+                                <i class="fas fa-search-plus has-text-primary mr-1"></i> <strong>Zoomed Object
+                                    View:</strong> Fine-grained crop around a target vehicle showing perturbed point
+                                clusters.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- BibTeX Section -->
+    <section class="section pt-0" id="citation">
+        <div class="container is-max-desktop">
+            <div class="box">
+                <h2 class="title is-3 section-title">BibTeX Citation</h2>
+                <div class="bibtex-wrapper">
+                    <button class="copy-btn" onclick="copyBibtex()"><i class="far fa-copy mr-1"></i> Copy</button>
+                    <div class="bibtex-box" id="bibtex-code">
+                        @misc{chandorkar2026comprehensiverobustnessanalysislidarbased,
+                        title={Comprehensive Robustness Analysis of LiDAR-based 3D Object Detection in Autonomous
+                        Driving},
+                        author={Adwait Chandorkar and Kai Krink and Yerdana Maulenbay and Hasan Tercan and Tobias
+                        Meisen},
+                        year={2026},
+                        eprint={2607.02074},
+                        archivePrefix={arXiv},
+                        primaryClass={cs.CV},
+                        url={https://arxiv.org/abs/2607.02074},
+                        }</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="container has-text-centered">
+            <p>
+                Webpage template adapted from <a href="https://github.com/nerfies/nerfies.github.io"
+                    target="_blank">Nerfies</a>, <a href="https://vcl-iisc.github.io/dyneval/"
+                    target="_blank">DynEval</a>, and <a href="https://ucf-crcv.github.io/RobustOnion/"
+                    target="_blank">RobustOnion</a>.
+            </p>
+            <p class="mt-2">
+                © 2026 Institute for Technologies and Management of Digital Transformation (TMDT), University of
+                Wuppertal.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        function copyBibtex() {
+            const code = document.getElementById('bibtex-code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.innerHTML = '<i class="fas fa-check mr-1"></i> Copied!';
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="far fa-copy mr-1"></i> Copy';
+                }, 2000);
+            });
+        }
+    </script>
+
+</body>
+
+</html>

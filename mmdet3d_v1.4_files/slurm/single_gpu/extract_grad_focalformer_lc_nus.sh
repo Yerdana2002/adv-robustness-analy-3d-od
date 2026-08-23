@@ -15,7 +15,7 @@
 #   sbatch --export=ALL,MODE=full extract_grad_focalformer_l_nus.sh
 #
 # Replaces extract_grad_focalformer_nus.sh, which is unusable as-is: it points
-# at PROJECT_ROOT=~/links/projects/rrg-zhengliu, an allocation that is OVER
+# at PROJECT_ROOT=~/links/projects/rrg-instructor, an allocation that is OVER
 # QUOTA (28K files against a 2048 limit), and at a nuscenes_processed.tar that
 # predates the current dataset.
 #
@@ -63,7 +63,7 @@ export PYTHONUNBUFFERED=1
 export TORCH_CUDA_ARCH_LIST="8.0;9.0"
 export CUDA_HOME=$CUDA_PATH
 
-PROJECT_ROOT=/home/yerdana/links/projects/def-zhengliu/yerdana
+PROJECT_ROOT=/home/yerdana/links/projects/def-instructor/yerdana
 MMDET_ROOT=$PROJECT_ROOT/mmdetection3d
 export PYTHONPATH="$MMDET_ROOT:${PYTHONPATH:-}"
 
@@ -74,7 +74,7 @@ VAL_PKL_TAR=$PROJECT_ROOT/data/temporal_pkls/nuscenes_infos_val_bevfusion.tar
 VAL_PKL=nuscenes_infos_val_bevfusion.pkl
 
 SCRATCH_OUT=/home/yerdana/links/scratch/yerdana/gradients
-NEARLINE_OUT=/home/yerdana/links/nearlines/def-zhengliu/yerdana/gradients
+NEARLINE_OUT=/home/yerdana/links/nearlines/def-instructor/yerdana/gradients
 WORK_DIR=$PROJECT_ROOT/work_dirs/ff_lc_grad_${TARGET_LAYER}_${MODE}_${SLURM_JOB_ID}
 LOCAL_GRAD_DIR=$SLURM_TMPDIR/gradients
 TAR_NAME=gradients_focalformer_lc_${TARGET_LAYER}_channel.tar

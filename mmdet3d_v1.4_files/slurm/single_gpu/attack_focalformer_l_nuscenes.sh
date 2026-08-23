@@ -16,7 +16,7 @@
 #   sbatch --export=ALL,LOSS_SIGN=0.0 attack_focalformer_l_nuscenes.sh   # control
 #
 # Replaces focalformer3d_nus_batched_attack.sh, which cannot run as written:
-# it points at rrg-zhengliu (OVER QUOTA -- 28K files against a 2048 limit), at
+# it points at rrg-instructor (OVER QUOTA -- 28K files against a 2048 limit), at
 # a nuscenes_processed.tar that predates the current dataset, and its
 # GRADIENT_OUTPUT_DIR line still carries the note "I need to put an actual
 # directory".
@@ -88,7 +88,7 @@ export PYTHONUNBUFFERED=1
 export TORCH_CUDA_ARCH_LIST="8.0;9.0"
 export CUDA_HOME=$CUDA_PATH
 
-PROJECT_ROOT=/home/yerdana/links/projects/def-zhengliu/yerdana
+PROJECT_ROOT=/home/yerdana/links/projects/def-instructor/yerdana
 MMDET_ROOT=$PROJECT_ROOT/mmdetection3d
 export PYTHONPATH="$MMDET_ROOT:${PYTHONPATH:-}"
 

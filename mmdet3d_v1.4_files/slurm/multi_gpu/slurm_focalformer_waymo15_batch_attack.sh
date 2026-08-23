@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --account=rrg-zhengliu
+#SBATCH --account=rrg-instructor
 #SBATCH --time=32:00:00
 #SBATCH --output=%x-%j.out
 #SBATCH --job-name=focal_waymo_adv_ddp
@@ -22,7 +22,7 @@ export PYTHONUNBUFFERED=1
 export TORCH_CUDA_ARCH_LIST="9.0"
 export CUDA_HOME=$CUDA_PATH
 
-PROJECT_ROOT=~/links/projects/rrg-zhengliu/yerdana
+PROJECT_ROOT=~/links/projects/rrg-instructor/yerdana
 MMDET_ROOT=$PROJECT_ROOT/mmdetection3d
 
 CONFIG_PATH=$MMDET_ROOT/projects/configs/focalformer3d/FocalFormer3D_Waymo_L_gradient.py

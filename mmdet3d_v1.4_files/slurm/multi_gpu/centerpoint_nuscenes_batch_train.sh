@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --account=rrg-zhengliu
+#SBATCH --account=rrg-instructor
 #SBATCH --time=36:00:00
 #SBATCH --output=%x-%j.out
 #SBATCH --job-name=nuscenes_adv_ddp4_final
@@ -25,7 +25,7 @@ export NCCL_DEBUG=WARN
 export PYTHONUNBUFFERED=1
 export MPLBACKEND=Agg
 
-PROJECT_ROOT=~/links/projects/rrg-zhengliu/yerdana
+PROJECT_ROOT=~/links/projects/rrg-instructor/yerdana
 MMDET_ROOT=$PROJECT_ROOT/mmdetection3d
 
 CONFIG_PATH=$MMDET_ROOT/configs/centerpoint/centerpoint_voxel0075_dcn_nus_adv.py
@@ -116,7 +116,7 @@ export CUDA_VISIBLE_DEVICES="$USE_VISIBLE"
 
 echo "Using CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
 
-torchrun --standalone --nproc_per_node="$REQUIRE_GPUS" /home/yerdana/links/projects/rrg-zhengliu/yerdana/mmdetection3d/mmdet3d/models/centerpoint_nuscenes_batch.py \
+torchrun --standalone --nproc_per_node="$REQUIRE_GPUS" /home/yerdana/links/projects/rrg-instructor/yerdana/mmdetection3d/mmdet3d/models/centerpoint_nuscenes_batch.py \
   --cfg "$CONFIG_PATH" \
   --grads "$LOCAL_GRADS" \
   --results "$LOCAL_RESULTS" \

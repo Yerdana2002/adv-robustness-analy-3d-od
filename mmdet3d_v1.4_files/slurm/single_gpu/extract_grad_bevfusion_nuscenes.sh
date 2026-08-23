@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --account=def-zhengliu
+#SBATCH --account=def-instructor
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=128G
@@ -24,7 +24,7 @@
 # capture, while weights stay frozen.
 #
 # Output lands on /scratch (GRAD_ROOT), not /project. 33.18 MB/sample fp32
-# x 6019 = 200 GB per modality, and /project (def-zhengliu) hit 950 GB of its
+# x 6019 = 200 GB per modality, and /project (def-instructor) hit 950 GB of its
 # 1000 GB with two such sets on it -- job 18871825 moved them off. Writing here
 # again would refill it. Scratch has 18 TB free but IS PURGED (~60 days
 # untouched), so tar anything that must survive to /nearline.
@@ -59,7 +59,7 @@ export PYTHONUNBUFFERED=1
 export TORCH_CUDA_ARCH_LIST="8.0;9.0"
 export CUDA_HOME=$CUDA_PATH
 
-PROJECT_ROOT=/home/yerdana/links/projects/def-zhengliu/yerdana
+PROJECT_ROOT=/home/yerdana/links/projects/def-instructor/yerdana
 MMDET_ROOT=$PROJECT_ROOT/mmdetection3d
 export PYTHONPATH="$MMDET_ROOT:${PYTHONPATH:-}"
 

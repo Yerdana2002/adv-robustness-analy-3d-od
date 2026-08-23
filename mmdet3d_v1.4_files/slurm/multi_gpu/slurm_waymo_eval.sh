@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --account=rrg-zhengliu
+#SBATCH --account=rrg-instructor
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --gpus-per-node=2
@@ -26,22 +26,22 @@ export PYTHONUNBUFFERED=1
 export TORCH_CUDA_ARCH_LIST="9.0"
 export CUDA_HOME=$CUDA_PATH
 
-PROJECT_ROOT="$HOME/links/projects/rrg-zhengliu/yerdana"
+PROJECT_ROOT="$HOME/links/projects/rrg-instructor/yerdana"
 MMDET_ROOT="$PROJECT_ROOT/mmdetection3d"
 export PYTHONPATH="$MMDET_ROOT:$PROJECT_ROOT:${PYTHONPATH:-}"
 
 EXPORT_SCRIPT="$PROJECT_ROOT/export_waymo_self_eval_adv_with_point_metrics.py"
 RUN_ANALYSIS="$PROJECT_ROOT/run_analysis_waymo.py"
-WAYMO_TAR="$HOME/links/projects/rrg-zhengliu/yerdana/waymo_kitti_format_v14_7679710.tar.zst"
+WAYMO_TAR="$HOME/links/projects/rrg-instructor/yerdana/waymo_kitti_format_v14_7679710.tar.zst"
 
 WAYMO_GT="$HOME/links/scratch/yerdana/waymo_pkl_backup_7235271/gt.bin"
 WAYMO_VAL_15="$HOME/links/scratch/yerdana/waymo_pkl_backup_7235271/waymo_infos_val_15split.pkl"
 
-FF_ADV_1="$HOME/links/projects/rrg-zhengliu/yerdana/tars/focalformer_waymo_adv_neck_ddp_7489967.tar"
-FF_ADV_2="$HOME/links/projects/rrg-zhengliu/yerdana/tars/focalformer_waymo_adv_neck_ddp_7524731.tar"
-PN_ADV="$HOME/links/projects/rrg-zhengliu/yerdana/tars/pillarnest_waymo_adv_pts_middle_encoder_ddp_7554443.tar"
+FF_ADV_1="$HOME/links/projects/rrg-instructor/yerdana/tars/focalformer_waymo_adv_neck_ddp_7489967.tar"
+FF_ADV_2="$HOME/links/projects/rrg-instructor/yerdana/tars/focalformer_waymo_adv_neck_ddp_7524731.tar"
+PN_ADV="$HOME/links/projects/rrg-instructor/yerdana/tars/pillarnest_waymo_adv_pts_middle_encoder_ddp_7554443.tar"
 
-OUT_ROOT="$HOME/links/projects/rrg-zhengliu/yerdana/waymo_self_eval_${SLURM_JOB_ID}"
+OUT_ROOT="$HOME/links/projects/rrg-instructor/yerdana/waymo_self_eval_${SLURM_JOB_ID}"
 LOG_DIR="$OUT_ROOT/logs"
 DB_DIR="$OUT_ROOT/db"
 mkdir -p "$OUT_ROOT" "$LOG_DIR" "$DB_DIR"

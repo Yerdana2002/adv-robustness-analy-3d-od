@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --account=def-zhengliu
+#SBATCH --account=def-instructor
 #SBATCH --time=24:00:00
 #SBATCH --output=%x-%j.out
 #SBATCH --job-name=pillarnest_attach_train20
@@ -21,7 +21,7 @@ export MKL_NUM_THREADS=$SLURM_CPUS_PER_TASK
 export NCCL_DEBUG=WARN
 export PYTHONUNBUFFERED=1
 
-PROJECT_ROOT=~/links/projects/def-zhengliu/yerdana
+PROJECT_ROOT=~/links/projects/def-instructor/yerdana
 MMDET_ROOT=$PROJECT_ROOT/mmdetection3d
 
 CONFIG_PATH=$MMDET_ROOT/configs/pillarnest/pillarnest_large_adv.py
@@ -37,7 +37,7 @@ ATTACK_SCRIPT=$MMDET_ROOT/mmdet3d/models/attack_pillarnest_nus_attach_ddp.py
 # (0 paths missing, +831,314 paths: temporal PKLs, temporal
 # gt_database, can_bus) if you would rather use the /project copy.
 NUSCENES_TAR_ZSTD=$HOME/links/scratch/yerdana/nuscenes_processed_may11.tar.zst
-#/home/yerdana/links/projects/def-zhengliu/yerdana/data/nuscenes_processed.tar.zst
+#/home/yerdana/links/projects/def-instructor/yerdana/data/nuscenes_processed.tar.zst
 NUSCENES_TAR_PLAIN=~/links/scratch/yerdana/nuscenes_processed.tar
 
 LOCAL_DATA=$SLURM_TMPDIR

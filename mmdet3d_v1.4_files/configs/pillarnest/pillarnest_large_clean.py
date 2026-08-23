@@ -80,7 +80,7 @@ model = dict(
         # init_cfg=dict(
         # type="Pretrained",
         # # Use the TINY checkpoint, not large
-        # checkpoint="/home/yerdana/links/projects/rrg-zhengliu/yerdana/checkpoint/convnext-tiny_32xb128_in1k_20221207-998cf3e9.pth", 
+        # checkpoint="/home/yerdana/links/projects/rrg-instructor/yerdana/checkpoint/convnext-tiny_32xb128_in1k_20221207-998cf3e9.pth", 
         # prefix="backbone.",)
     ),
     

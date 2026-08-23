@@ -47,7 +47,7 @@ export PYTHONUNBUFFERED=1
 export TORCH_CUDA_ARCH_LIST="8.0;9.0"
 export CUDA_HOME=$CUDA_PATH
 
-PROJECT_ROOT=/home/yerdana/links/projects/def-zhengliu/yerdana
+PROJECT_ROOT=/home/yerdana/links/projects/def-instructor/yerdana
 MMDET_ROOT=$PROJECT_ROOT/mmdetection3d
 export PYTHONPATH="$MMDET_ROOT:${PYTHONPATH:-}"
 

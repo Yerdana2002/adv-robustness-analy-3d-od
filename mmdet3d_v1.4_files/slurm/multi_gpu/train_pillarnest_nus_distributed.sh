@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --account=def-zhengliu
+#SBATCH --account=def-instructor
 #SBATCH --time=24:00:00
 #SBATCH --output=%x-%j.out
 #SBATCH --job-name=pillarnest_adv_resume_ddp
@@ -21,7 +21,7 @@ export MKL_NUM_THREADS=$SLURM_CPUS_PER_TASK
 export NCCL_DEBUG=WARN
 export PYTHONUNBUFFERED=1
 
-PROJECT_ROOT=~/links/projects/def-zhengliu/yerdana
+PROJECT_ROOT=~/links/projects/def-instructor/yerdana
 MMDET_ROOT=$PROJECT_ROOT/mmdetection3d
 
 CONFIG_PATH=$MMDET_ROOT/configs/pillarnest/pillarnest_large_mininus.py

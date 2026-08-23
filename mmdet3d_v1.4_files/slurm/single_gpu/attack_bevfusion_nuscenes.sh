@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --account=def-zhengliu
+#SBATCH --account=def-instructor
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=128G
@@ -131,7 +131,7 @@ export PYTHONUNBUFFERED=1
 export TORCH_CUDA_ARCH_LIST="8.0;9.0"
 export CUDA_HOME=$CUDA_PATH
 
-PROJECT_ROOT=/home/yerdana/links/projects/def-zhengliu/yerdana
+PROJECT_ROOT=/home/yerdana/links/projects/def-instructor/yerdana
 MMDET_ROOT=$PROJECT_ROOT/mmdetection3d
 export PYTHONPATH="$MMDET_ROOT:${PYTHONPATH:-}"
 
@@ -145,7 +145,7 @@ else
     CHECKPOINT_PATH=$PROJECT_ROOT/checkpoint/bevfusion_lidar_mmcv_spconv.pth
 fi
 
-# Gradients live on /scratch since job 18871825: /project (def-zhengliu)
+# Gradients live on /scratch since job 18871825: /project (def-instructor)
 # hit 950 GB of 1000 GB and these two sets were 399 GB of it. Override
 # with GRAD_ROOT=... if they are staged somewhere else.
 GRAD_ROOT=${GRAD_ROOT:-/home/yerdana/links/scratch/yerdana/gradients}
@@ -313,7 +313,7 @@ for tag, p in (('stock', stock_cfg), ('prebaked', prebaked_cfg)):
 # Weights are irrelevant here -- both paths share them -- so no checkpoint load.
 import os
 import torch
-sample_p = ('/home/yerdana/links/projects/def-zhengliu/yerdana/'
+sample_p = ('/home/yerdana/links/projects/def-instructor/yerdana/'
             'data/diag_samples/failing_sample.pt')
 if not torch.cuda.is_available():
     print('  -- no GPU, skipping encoder equivalence check')

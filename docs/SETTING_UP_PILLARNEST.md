@@ -1,4 +1,8 @@
 # Setting up PillarNeSt
+
+> **This page covers mmdetection3d 1.0.0rc / mmcv-full 1.4.x.** For
+> **mmdetection3d 1.4 / mmcv 2.2**, required on H100-class GPUs, see
+> [SETTING_UP_PILLARNEST_MMDET14.md](SETTING_UP_PILLARNEST_MMDET14.md).
 Setting up PillarNeSt is a bit more complicated than CenterPoint and PointPillars, because it is not included in mmdetection3d by default. The first three steps can be ignored if `mmdetection3d_patch.patch` has been applied. 
 ## Steps
 * Copy the files from their [github](https://github.com/WayneMao/PillarNeSt) into their respective folder.

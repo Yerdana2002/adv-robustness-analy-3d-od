@@ -6,10 +6,10 @@ Python 3.11 / CUDA 12.2**.
 
 This is the counterpart to [`mmdetection3d_files/`](../mmdetection3d_files/), which holds
 the same models for the older **mmdetection3d 1.0.0rc / mmcv-full 1.4.x** stack. Use this
-tree if your GPUs are newer than that stack can be built for — see
+tree if your GPUs are newer than that stack can be built for, see
 [docs/VOXELIZATION_MMCV2.md §1.2](../docs/VOXELIZATION_MMCV2.md#12-why-we-cannot-stay-on-the-14x-stack-h100).
 
-**Setup guides — read these first:**
+**Setup guides, read these first:**
 
 * [docs/SETTING_UP_FOCALFORMER3D_MMDET14.md](../docs/SETTING_UP_FOCALFORMER3D_MMDET14.md)
 * [docs/SETTING_UP_PILLARNEST_MMDET14.md](../docs/SETTING_UP_PILLARNEST_MMDET14.md)
@@ -38,6 +38,12 @@ configs/pillarnest/        nuScenes / KITTI / Waymo; clean and adversarial.
 tools/
   convert_focalformer_ckpt.py            mmcv 1.x attention names -> mmengine
   convert_pillarnest_ckpt_to_mmdet14.py  component prefixes -> pts_* names
+
+slurm/                     SLURM jobs for the four stages -- clean test,
+  single_gpu/              gradient extraction, adversarial attack,
+  multi_gpu/               adversarial test. READ slurm/README.md: these
+  README.md                encode an inode-quota constraint that will take
+                           out your whole allocation if ignored.
 ```
 
 ## Scope

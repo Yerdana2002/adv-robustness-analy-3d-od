@@ -3,7 +3,7 @@
 Upstream: [WayneMao/PillarNeSt](https://github.com/WayneMao/PillarNeSt)
 
 The upstream release targets **mmdetection3d 0.x / 1.0.0rc with mmcv-full 1.x**. This
-guide covers **mmdetection3d 1.4.0 with mmcv 2.2.0** — see
+guide covers **mmdetection3d 1.4.0 with mmcv 2.2.0**. See
 [VOXELIZATION_MMCV2.md §1.2](VOXELIZATION_MMCV2.md#12-why-we-cannot-stay-on-the-14x-stack-h100)
 for why that migration is not optional.
 
@@ -36,7 +36,7 @@ model = dict(
 )
 ```
 
-(That block is from `pillarnest_large_mininus.py`. Configs differ in what they override —
+(That block is from `pillarnest_large_mininus.py`. Configs differ in what they override,
 `pillarnest_large_clean.py`, for instance, `_delete_`s the head back to stock `CenterHead`
 while keeping `PillarNestBBoxCoder`. Read the config you are actually running.)
 
@@ -58,7 +58,7 @@ prefixed `pillarnest_` so nothing overwrites a stock module.
 | :--- | :--- |
 | Python | 3.11 |
 | PyTorch | 2.5.1 (CUDA 12.2) |
-| mmcv | 2.2.0 — [patched](VOXELIZATION_MMCV2.md) only if you need attack gradients |
+| mmcv | 2.2.0, [patched](VOXELIZATION_MMCV2.md) only if you need attack gradients |
 | mmengine | 0.10.5 |
 | mmdet | 3.3.0 |
 | mmdetection3d | 1.4.0 |
@@ -186,7 +186,7 @@ Keys already starting with `pts_` pass through, so the script is idempotent.
 
 **Pass `--config`.** It is optional and you should use it anyway: the script then builds
 the target model and reports unexpected keys, shape mismatches and missing keys before
-you spend a run finding out. `--drop_shape_mismatch` keeps only compatible tensors — use
+you spend a run finding out. `--drop_shape_mismatch` keeps only compatible tensors, use
 it to *diagnose*, not to make a mismatch go away, since a dropped tensor is a randomly
 initialised layer.
 
@@ -210,7 +210,7 @@ Where FocalFormer3D applies the transform in `add_pred_to_datasample`, PillarNeS
 it as **config flags**, because the box decode already lives in one place. All three
 default to `False`.
 
-**On the bbox coder** — these are the evaluator-facing ones, in
+**On the bbox coder**: these are the evaluator-facing ones, in
 `PillarNestBBoxCoder.decode`:
 
 ```python
@@ -222,7 +222,7 @@ bbox_coder=dict(
 )
 ```
 
-**On the head** — `legacy_iou_transform` is a *different* thing despite the similar name.
+**On the head**: `legacy_iou_transform` is a *different* thing despite the similar name.
 It sits in the helper that decodes predictions for **IoU computation in the loss**, instead of on
 the path to the evaluator:
 
@@ -252,7 +252,7 @@ Configs in [`mmdet3d_v1.4_files/configs/pillarnest/`](../mmdet3d_v1.4_files/conf
 
 | config | purpose |
 | :--- | :--- |
-| `pillarnest_large_clean.py` | nuScenes val, clean eval — start here (see note) |
+| `pillarnest_large_clean.py` | nuScenes val, clean eval, start here (see note) |
 | `pillarnest_large_adv.py` | adversarial eval |
 | `pillarnest_large_mininus.py` | val-as-train, for gradient extraction and quick runs |
 | `pillarnest_kitti_adv.py`, `pillarnest_waymo_adv.py` | KITTI / Waymo |
@@ -278,10 +278,10 @@ to score worse than the nuScenes numbers above.
 
 | Symptom | Cause |
 | :--- | :--- |
-| **mAP far below reference, checkpoint loads cleanly** | Coordinate convention. Try `legacy_dim_swap` / `legacy_yaw_transform` both ways — [§6.1](#61-the-controls-config-flags-not-code) explains why neither state is universally right. |
+| **mAP far below reference, checkpoint loads cleanly** | Coordinate convention. Try `legacy_dim_swap` / `legacy_yaw_transform` both ways, [§6.1](#61-the-controls-config-flags-not-code) explains why neither state is universally right. |
 | `PillarNestConvNeXt is not in the mmdet3d::model registry` | `__init__.py` edits not applied ([§3.1](#31-register-them)), or mmdet3d not reinstalled after copying. |
 | Many unexpected keys on load | Checkpoint not converted ([§5](#5-checkpoints-and-conversion)). Run with `--config` to see the diff. |
-| Shape mismatch on `pts_backbone` | `arch` mismatch — `pillarnest_large.pth` needs `arch='large'`, not `'base'`. |
+| Shape mismatch on `pts_backbone` | `arch` mismatch, `pillarnest_large.pth` needs `arch='large'`, not `'base'`. |
 | IoU scores implausible, mAP mediocre but not zero | `legacy_iou_transform` not set on the head. |
 | Slow first iterations, heavy stdout | `debug=True` in the shipped configs. |
 
@@ -289,6 +289,6 @@ to score worse than the nuScenes numbers above.
 
 ## See also
 
-* [SETTING_UP_FOCALFORMER3D_MMDET14.md](SETTING_UP_FOCALFORMER3D_MMDET14.md) — same port, plugin-style integration
-* [SETTING_UP_PILLARNEST.md](SETTING_UP_PILLARNEST.md) — the original mmdet3d 1.0.0rc notes
-* [VOXELIZATION_MMCV2.md](VOXELIZATION_MMCV2.md) — differentiable voxelization on mmcv 2.x
+* [SETTING_UP_FOCALFORMER3D_MMDET14.md](SETTING_UP_FOCALFORMER3D_MMDET14.md), same port, plugin-style integration
+* [SETTING_UP_PILLARNEST.md](SETTING_UP_PILLARNEST.md), the original mmdet3d 1.0.0rc notes
+* [VOXELIZATION_MMCV2.md](VOXELIZATION_MMCV2.md), differentiable voxelization on mmcv 2.x

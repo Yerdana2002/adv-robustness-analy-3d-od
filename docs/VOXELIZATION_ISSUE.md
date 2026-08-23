@@ -7,7 +7,7 @@ The issue with the voxelization implemented in mmdetection3d is that the backwar
 4. Install mmdetection3d by using `pip -v -e .` in the `mmdetection3d/` directory
 
 > **Applies to `mmcv-full` 1.4.x / `mmdetection3d` v1.0.0rc only.** On mmdetection3d ≥ 1.1
-> the `mmdet3d/ops/` directory no longer exists — voxelization was moved into mmcv — so
+> the `mmdet3d/ops/` directory no longer exists, voxelization was moved into mmcv, so
 > step 3 above has nothing to patch.
 
 ## On MMCV 2.x.x
@@ -18,8 +18,8 @@ re-targeted at `mmcv/ops/` and verified against mmcv 2.2.0 / mmdetection3d 1.4.0
 torch 2.5.1 / CUDA 12.2 / Python 3.11.
 
 You will need this if your GPUs are newer than the 1.4.x stack supports. On NVIDIA H100
-(sm_90) nodes — e.g. Alliance Canada, whose current software environment ships no CUDA
-11.x toolkit at all — mmcv-full 1.4.2 cannot be built, so the 1.x patch above is
+(sm_90) nodes, e.g. Alliance Canada, whose current software environment ships no CUDA
+11.x toolkit at all, mmcv-full 1.4.2 cannot be built, so the 1.x patch above is
 unusable regardless of how it is applied.
 
 [VOXELIZATION_MMCV2_USAGE.md](VOXELIZATION_MMCV2_USAGE.md) then shows how to call the

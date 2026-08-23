@@ -13,7 +13,7 @@ if your GPUs are newer than that stack.
 
 ### 1.1 The patch in VOXELIZATION_ISSUE.md has no target on mmdet3d ≥ 1.1
 
-The existing fix says to edit `mmdet3d/ops/voxel/` — `voxelize.py`,
+The existing fix says to edit `mmdet3d/ops/voxel/`: `voxelize.py`,
 `src/voxelization_cuda.cu`, `src/voxelization_cpu.cpp`, `src/voxelization.h`.
 
 On mmdetection3d 1.4.0 that directory does not exist:
@@ -31,13 +31,13 @@ Our compute is Alliance Canada's **rorqual** cluster. Its GPU nodes are NVIDIA H
 `INSTALL_MMD3D.md` pins CUDA 11.8, torch 2.0.1, Python 3.8 and mmcv-full 1.4.2. None of
 that is reachable here:
 
-* **rorqual exposes only `StdEnv/2023`.** `module load StdEnv/2020` is a silent no-op —
+* **rorqual exposes only `StdEnv/2023`.** `module load StdEnv/2020` is a silent no-op,
   it returns 0 and loads nothing. Under `StdEnv/2023`, `module avail cuda` returns
   `12.2`, `12.6`, `12.9`, `13.2`. **There is no CUDA 11.x toolkit on this cluster.**
 * The Alliance wheelhouse for `StdEnv/2023` + `python/3.11` supplies **torch 2.5.1**
   built against **CUDA 12.2**. mmcv-full 1.4.2 was released in December 2021 and still
   includes `THC/THC.h`, removed in torch 1.11. `INSTALL_MMD3D.md` already documents
-  patching those out — but the THC fix is necessary, not sufficient. 1.4.2 does not
+  patching those out, but the THC fix is necessary, not sufficient. 1.4.2 does not
   compile against torch 2.5 / CUDA 12.2, and mmdetection3d v0.18.1 is not importable on
   Python 3.11.
 
@@ -66,7 +66,7 @@ backbone, neck and loss all will run normally; `loss.backward()` succeeds; and
 `points.grad` is exactly zero. Therefore, an attack built on it produces adversarial point clouds
 that are pure initialization noise while reporting plausible losses. We tested it by running a control with the adversarial term deleted (`loss_sign=0`) and
 finding it reproduced the "attack" to within 0.001 mAP (paired test over 124,831 boxes,
-p = 0.49). **Do not assume the gradient is alive because the attack ran** — see
+p = 0.49). **Do not assume the gradient is alive because the attack ran**, see
 [§5.2](#52-the-gradient-is-actually-alive) for the check.
 
 ---
@@ -118,20 +118,20 @@ already validated changes.
 
 **There is no backward kernel, and none is needed.** Voxelization does two things:
 
-1. **Assignment** — which voxel each point falls into. This is piecewise constant in the
+1. **Assignment**: which voxel each point falls into. This is piecewise constant in the
    point coordinates: its gradient is zero almost everywhere. There is nothing to
    differentiate.
-2. **Aggregation** — copying point features into their voxel slots. This is a pure
+2. **Aggregation**: copying point features into their voxel slots. This is a pure
    gather/scatter and *is* differentiable.
 
 So we do not write a backward pass. We run the existing (non-differentiable) CUDA kernel
 purely to compute the **assignment**, have it hand back the mapping tensors it normally
 throws away, and then redo the **aggregation** in Python with an out-of-place
 `index_put`, which autograd records for free. Stock mmcv already computes those mappings
-internally — it just never returns them. The entire patch is, in essence, *making three
+internally. It just never returns them. The entire patch is, in essence, *making three
 existing tensors visible.*
 
-### 3.1 `mmcv/ops/csrc/pytorch/cuda/voxelization_cuda.cu` — the v2 kernel launcher
+### 3.1 `mmcv/ops/csrc/pytorch/cuda/voxelization_cuda.cu`: the v2 kernel launcher
 
 Adds `HardVoxelizeForwardCUDAKernelLauncher_v2`. It runs the same five kernels as the
 stock launcher, in the same order, with one difference: the mapping tensors are
@@ -183,9 +183,9 @@ differentiably.
 
 Note the launcher returns `voxel_num` as an `int` rather than writing it to an output
 tensor, and that points dropped by `max_voxels`/`max_points` clipping keep `-1` in the
-mapping tensors — the Python side must mask on that.
+mapping tensors, so the Python side must mask on that.
 
-### 3.2 `mmcv/ops/csrc/pytorch/voxelization.cpp` — the dispatcher
+### 3.2 `mmcv/ops/csrc/pytorch/voxelization.cpp`: the dispatcher
 
 Declares the launcher and adds the `hard_voxelize_forward_v2` dispatcher, which unpacks
 `voxel_size`/`coors_range` into `std::vector<float>` and fills the `voxel_num` tensor from
@@ -208,10 +208,10 @@ void hard_voxelize_forward_v2(const at::Tensor &points, ..., at::Tensor &voxel_n
 }
 ```
 
-**CUDA only.** There is deliberately no CPU fallback — attacks run on GPU. `hard_voxelize_forward`
+**CUDA only.** There is deliberately no CPU fallback, because attacks run on GPU. `hard_voxelize_forward`
 keeps its CPU implementation untouched.
 
-### 3.3 `mmcv/ops/csrc/pytorch/pybind.cpp` — the binding
+### 3.3 `mmcv/ops/csrc/pytorch/pybind.cpp`: the binding
 
 Declares `hard_voxelize_forward_v2` and binds it so it appears on `mmcv._ext`:
 
@@ -230,7 +230,7 @@ m.def("hard_voxelize_forward_v2", &hard_voxelize_forward_v2,
 binding. That is the only edit to stock behaviour and it is source-compatible: every
 existing call site passes both explicitly.
 
-### 3.4 `mmcv/ops/voxelize.py` — the Python side
+### 3.4 `mmcv/ops/voxelize.py`: the Python side
 
 The original module body is kept inside a `'''...'''` block and a rewrite is
 appended below it. The rewrite replaces the `_Voxelization(Function)` class with a plain
@@ -283,7 +283,7 @@ caller's `points` tensor, so it carries a graph back to it.
 >
 > If you want the flag to work end-to-end, thread it through `Voxelization.__init__` and
 > `forward`. Note that `index_put` with `accumulate=False` (the default) is only
-> deterministic when the indices are unique. That holds here — `point_to_voxelidx_kernel`
+> deterministic when the indices are unique. That holds here, `point_to_voxelidx_kernel`
 > gives each point within a voxel its own slot, so every `(row, slot)` pair is distinct
 > but it is a property of this particular mapping, and not a general guarantee.
 
@@ -291,7 +291,7 @@ caller's `points` tensor, so it carries a graph back to it.
 
 ## 4. Build
 
-Build on a **GPU node** — `nvcc` needs to be present and the install check exercises CUDA
+Build on a **GPU node**, `nvcc` needs to be present and the install check exercises CUDA
 ops. Submit it, do not run it on a login node. In my case, the environment was named centerpoint, so you may name it however you like. 
 
 ```bash
@@ -340,7 +340,7 @@ print('hard_voxelize_forward_v2:', hasattr(_ext, 'hard_voxelize_forward_v2'))
 "
 ```
 
-Both must print `True`. If `_v2` is missing the rebuild did not take — check for a stale
+Both must print `True`. If `_v2` is missing the rebuild did not take, check for a stale
 `.so` in `site-packages` shadowing the editable install.
 
 ### 5.2 The gradient is actually alive
@@ -414,5 +414,5 @@ A non-zero norm here is the property every attack in this repository depends on.
 
 ## 6. Next
 
-[VOXELIZATION_MMCV2_USAGE.md](VOXELIZATION_MMCV2_USAGE.md) — how `_ext.hard_voxelize_forward_v2`
+[VOXELIZATION_MMCV2_USAGE.md](VOXELIZATION_MMCV2_USAGE.md), how `_ext.hard_voxelize_forward_v2`
 is called from the attack scripts, worked through end to end on FocalFormer3D.

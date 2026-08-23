@@ -48,17 +48,17 @@ does its own voxelization inside the detector rather than delegating to
 
 ## 2. The recipe
 
-> **Step 1** — call `_ext.hard_voxelize_forward_v2` to get the voxel **assignment** plus
+> **Step 1**: call `_ext.hard_voxelize_forward_v2` to get the voxel **assignment** plus
 > the three mapping tensors.
-> **Step 2** — throw away the `voxels` buffer it filled and rebuild the grid with
+> **Step 2**: throw away the `voxels` buffer it filled and rebuild the grid with
 > `index_put` from the original `points` tensor. *This is the step that carries the
 > gradient.*
-> **Step 3** — run the rebuilt grid through VFE → middle encoder → backbone → neck,
+> **Step 3**: run the rebuilt grid through VFE → middle encoder → backbone → neck,
 > and backprop to `points`.
 
 ---
 
-## 3. Step 1 — call the extension
+## 3. Step 1: call the extension
 
 `attack_focalformer_nus.py`, `hard_voxelize_v2()`:
 
@@ -112,7 +112,7 @@ def hard_voxelize_v2(points, voxel_size, coors_range,
 ```
 
 The dict's `voxels` entry is returned for inspection only. **Do not feed it to the
-model** — it is the in-place buffer with `grad_fn=None`, and using it is exactly the
+model**. It is the in-place buffer with `grad_fn=None`, and using it is exactly the
 silent failure this whole document exists to prevent.
 
 Argument gotchas, each of which fails at the C++ boundary rather than gracefully:
@@ -122,11 +122,11 @@ Argument gotchas, each of which fails at the C++ boundary rather than gracefully
 * `points` must be `.contiguous()`.
 * The three mapping tensors must be `int32` and pre-filled with `-1`.
 * `max_voxels` is an int here. FocalFormer3D's config declares
-  `max_voxels=(120000, 160000)` — a `(train, test)` pair — so the caller takes `[0]`.
+  `max_voxels=(120000, 160000)`, a `(train, test)` pair, so the caller takes `[0]`.
 
 ---
 
-## 4. Step 2 — rebuild the grid so it carries a gradient
+## 4. Step 2: rebuild the grid so it carries a gradient
 
 This is the crux. `attack_focalformer_nus.py`, inside `batched_voxelize()`:
 
@@ -182,12 +182,12 @@ Three things to hold onto:
 * **`coors` is passed through unpermuted here.** BEVFusion's version of this function
   additionally permutes `coors` to `(x, y, z)`, because `BEVFusionSparseEncoder` declares
   `sparse_shape [1440, 1440, 41]` while the op returns `(z, y, x)`. FocalFormer3D's
-  `SparseEncoder` uses the other convention. **This is per-model — copying the permute
+  `SparseEncoder` uses the other convention. **This is per-model. Copying the permute
   across silently rotates the scene.**
 
 ---
 
-## 5. Step 3 — forward to the gradient target
+## 5. Step 3: forward to the gradient target
 
 FocalFormer3D voxelizes inside the detector, so the attack rebuilds the encoder stack
 explicitly from the loaded model's submodules:
@@ -337,13 +337,13 @@ print(f"    Iter {it:3d}: adv={adv_loss.item():.4f}, dist={dist_loss.item():.4f}
 ```
 
 `grad_norm` identically `0.000000` means the graph is broken. It will still be non-zero
-if only the Chamfer term is connected, so this check is necessary but not sufficient —
+if only the Chamfer term is connected, so this check is necessary but not sufficient,
 which is why §7.2 exists.
 
 ### 7.2 The `loss_sign=0` control
 
-The decisive test. `loss_sign=0` deletes the adversarial term and leaves everything else —
-initialization noise, Chamfer, Adam, clamping — identical:
+The decisive test. `loss_sign=0` deletes the adversarial term and leaves everything else,
+initialization noise, Chamfer, Adam, clamping, identical:
 
 ```bash
 sbatch --export=ALL,LOSS_SIGN=0.0 attack_focalformer_l_nuscenes.sh
@@ -362,7 +362,7 @@ The three steps are model-independent. What changes:
 | :--- | :--- |
 | Encoder path | Read the detector's `extract_feat` / `extract_pts_feat` and mirror it. FocalFormer3D voxelizes in the detector; CenterPoint delegates to `data_preprocessor`. |
 | `coors` axis order | Compare the op's `(z, y, x)` against the middle encoder's declared `sparse_shape`. Permute only if they disagree. |
-| Voxel parameters | Read from `cfg.model.pts_voxel_layer` — never hardcode. |
+| Voxel parameters | Read from `cfg.model.pts_voxel_layer`, never hardcode. |
 | Gradient target | Must match the shape of the extracted gradient tensor. The script asserts this and aborts on mismatch. |
 | `max_voxels` | Configs often give a `(train, test)` tuple; take one element. |
 

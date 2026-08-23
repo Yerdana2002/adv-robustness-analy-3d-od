@@ -4,7 +4,7 @@ Upstream: [NVlabs/FocalFormer3D](https://github.com/NVlabs/FocalFormer3D)
 
 The upstream release targets **mmdetection3d 0.x / 1.0.0rc with mmcv-full 1.x and
 mmdet 2.x**. This guide covers running it on **mmdetection3d 1.4.0 with mmcv 2.2.0**,
-which is what you are forced onto if your GPUs are newer than that stack supports — see
+which is what you are forced onto if your GPUs are newer than that stack supports, see
 [VOXELIZATION_MMCV2.md §1.2](VOXELIZATION_MMCV2.md#12-why-we-cannot-stay-on-the-14x-stack-h100).
 
 Everything described here is in [`mmdet3d_v1.4_files/`](../mmdet3d_v1.4_files/); the
@@ -21,7 +21,7 @@ layout mirrors upstream so the two can be diffed file-by-file.
 | :--- | :--- |
 | Python | 3.11 |
 | PyTorch | 2.5.1 (CUDA 12.2) |
-| mmcv | **2.2.0, patched** — see [VOXELIZATION_MMCV2.md](VOXELIZATION_MMCV2.md) |
+| mmcv | **2.2.0, patched**. See [VOXELIZATION_MMCV2.md](VOXELIZATION_MMCV2.md) |
 | mmengine | 0.10.5 |
 | mmdet | 3.3.0 |
 | mmdetection3d | 1.4.0 |
@@ -49,7 +49,7 @@ cp -r mmdet3d_v1.4_files/projects/configs/focalformer3d <mmdetection3d>/projects
 ```
 
 No edits to mmdetection3d's own source are needed. FocalFormer3D is a **self-contained
-plugin** — everything registers through `custom_imports`. (PillarNeSt is the opposite;
+plugin**, everything registers through `custom_imports`. (PillarNeSt is the opposite;
 see [SETTING_UP_PILLARNEST_MMDET14.md](SETTING_UP_PILLARNEST_MMDET14.md).)
 
 Every config carries:
@@ -96,9 +96,9 @@ lines, so a moved line counts twice.
 | `models/utils/ops/bev_pool/bev_pool_op.py` | 97 | 97 | **0** |
 | `models/utils/ops/bev_pool/__init__.py` | 24 | 24 | **0** |
 | `models/utils/ops/locatt_ops/__init__.py` | 27 | 27 | **0** |
-| `models/detectors/__init__.py`, `necks/__init__.py`, `assigners/__init__.py`, `pipelines/__init__.py`, `core/hook/__init__.py` | — | — | **0** |
+| `models/detectors/__init__.py`, `necks/__init__.py`, `assigners/__init__.py`, `pipelines/__init__.py`, `core/hook/__init__.py` | none | none | **0** |
 
-Two things worth reading off this table. The **custom CUDA ops did not change at all** —
+Two things worth reading off this table. The **custom CUDA ops did not change at all**.
 `bev_pool` and `locatt_ops` are byte-identical, because they are self-contained
 `autograd.Function`s that never touch an mm* API. And **the detector is where the work
 was**: `focalformer3d.py` is essentially a rewrite.
@@ -119,7 +119,7 @@ back as `InstanceData` on `pred_instances_3d`.
 
 **c. Attention module renames.** mmcv 1.x `BaseTransformerLayer` held `attentions[0]`,
 `attentions[1]`, `ffns[0]`. mmengine's replacement names them `self_attn`, `cross_attn`,
-`ffn`. This is why the checkpoint needs converting — see [§5](#5-checkpoint-conversion).
+`ffn`. This is why the checkpoint needs converting, see [§5](#5-checkpoint-conversion).
 
 **d. Coordinate conventions.** [§6](#6-the-coordinate-convention-lwh-and-yaw).
 
@@ -139,7 +139,7 @@ We used:
 | `FocalFormer3D_L_ep6_mAP664_NDS709.pth` | mAP 0.664 / NDS 0.709 | `FocalFormer3D_L_ep6_converted.pth` |
 | `FocalFormer3D_LC_ep6_mAP705_NDS731.pth` | mAP 0.705 / NDS 0.731 | `FocalFormer3D_LC_ep6_converted.pth` |
 
-**Always load the converted file.** The originals load too — with a warning — and then
+**Always load the converted file.** The originals load too, with a warning, and then
 evaluate at a degraded score.
 
 ---
@@ -169,7 +169,7 @@ Nothing else is changed, only rename was required
 > silently left at its random initialisation. The model runs and produces plausible-looking
 > boxes at a much lower mAP.
 >
-> Verify explicitly rather than trusting the run — build the model, diff `state_dict()`
+> Verify explicitly rather than trusting the run, build the model, diff `state_dict()`
 > keys against the checkpoint, and require **zero** missing and **zero** unexpected.
 > `diag_focalformer_lc_keys.sh` in our tree does this; the check must run in a GPU job,
 > because the plugin's `__init__.py` swallows the CUDA-dependent imports on a login node
@@ -181,7 +181,7 @@ Nothing else is changed, only rename was required
 
 **This is the failure that costs the most time, because nothing reports it.** The model
 loads with every key matched, inference runs, boxes come out at sensible positions with
-sensible scores — and nuScenes mAP collapses.
+sensible scores, and nuScenes mAP collapses.
 
 ### 6.1 Root cause
 
@@ -197,7 +197,7 @@ states it directly:
 
 FocalFormer3D was written against the old one. Its head still **predicts `(w, l, h)` with
 the old yaw reference**, while the mmdet3d 1.4 nuScenes evaluator reads `(l, w, h)` with
-yaw measured from +x. The weights are not wrong — the interpretation downstream of them
+yaw measured from +x. The weights are not wrong, the interpretation downstream of them
 is.
 
 Because the two orderings differ only by a transpose, a wrong box is still a *plausible*
@@ -233,11 +233,11 @@ def add_pred_to_datasample(self, batch_data_samples, bbox_results):
 Three things to note:
 
 * **`.clone()` is required.** Without it the second assignment reads the value the first
-  one just overwrote, and you get `w, w, h` — every box square in plan view.
+  one just overwrote, and you get `w, w, h`, every box square in plan view.
 * **Both halves are needed.** Fixing dimensions without yaw, or yaw without dimensions,
   leaves mAP nearly as bad. They are one change.
 * **It is gated on the dataset,** via `test_cfg.pts.dataset`. **Waymo must not get this
-  transform** — its converter already emits mmdet3d-convention boxes, and applying the
+  transform**, its converter already emits mmdet3d-convention boxes, and applying the
   swap there breaks a working path. If you add a dataset, decide deliberately which side
   of this gate it belongs on.
 
@@ -271,8 +271,8 @@ python tools/test.py \
     checkpoint/FocalFormer3D_L_ep6_converted.pth
 ```
 
-For LiDAR+camera use `FocalFormer3D_LC_test.py`. That config did not exist upstream — the
-camera blocks in `FocalFormer3D_L_v14.py` are commented out — so every value in it was
+For LiDAR+camera use `FocalFormer3D_LC_test.py`. That config did not exist upstream, the
+camera blocks in `FocalFormer3D_L_v14.py` are commented out, so every value in it was
 recovered from those fragments or read off the checkpoint. Its header documents each one.
 
 ---
@@ -284,7 +284,7 @@ recovered from those fragments or read off the checkpoint. Its header documents 
 | **mAP far below reference, checkpoint loads cleanly** | [§6](#6-the-coordinate-convention-lwh-and-yaw). First thing to suspect. |
 | `FocalFormer3D is not in the mmdet3d::model registry` | No GPU. The plugin `__init__.py` catches the CUDA import failure and sets the classes to `None`. Run in a GPU job. |
 | mAP a few points low, no warnings | Unconverted checkpoint ([§5](#5-checkpoint-conversion)), or `bgr_to_rgb` inverted on the LC path. |
-| Camera features splatted to wrong BEV cells | `lidar2img` or `img_aug_matrix` dropped from `meta_keys`. Both are load-bearing and neither raises if missing. |
+| Camera features splatted to wrong BEV cells | `lidar2img` or `img_aug_matrix` dropped from `meta_keys`. Both affect the result and neither raises if missing. |
 | LC frustum shape mismatch warning | `img_scale` given as (W, H). LiftSplatShoot is height-first: `(448, 800)`, not `(800, 448)`. |
 | `'NoneType' object is not callable` in `FocalEncoderLayer` | `cam_lss=True` without `iter_bev_cam=True`. `I2P_block` is deliberately not built under LSS. |
 | Registry name collisions importing BEVFusion transforms | Do not import `projects/BEVFusion` alongside the plugin. The LC pipeline uses its own `focalformer_img.py`. |
@@ -293,6 +293,6 @@ recovered from those fragments or read off the checkpoint. Its header documents 
 
 ## See also
 
-* [SETTING_UP_PILLARNEST_MMDET14.md](SETTING_UP_PILLARNEST_MMDET14.md) — same port, opposite integration style
-* [VOXELIZATION_MMCV2.md](VOXELIZATION_MMCV2.md) — differentiable voxelization on mmcv 2.x
-* [VOXELIZATION_MMCV2_USAGE.md](VOXELIZATION_MMCV2_USAGE.md) — attacks, worked through on FocalFormer3D
+* [SETTING_UP_PILLARNEST_MMDET14.md](SETTING_UP_PILLARNEST_MMDET14.md), same port, opposite integration style
+* [VOXELIZATION_MMCV2.md](VOXELIZATION_MMCV2.md), differentiable voxelization on mmcv 2.x
+* [VOXELIZATION_MMCV2_USAGE.md](VOXELIZATION_MMCV2_USAGE.md), attacks, worked through on FocalFormer3D
